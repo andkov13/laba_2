@@ -1,40 +1,40 @@
 import time
 import random
-import psutil
-import threading
+# import psutil
+# import threading
 import os
 import sys
 
 # Обмеження рекурсивного виклику функцій(максимальна зафіксована кількість ітерацій ~ 20000)
-recursion_limit = 20005
+recursion_limit = 20000
 sys.setrecursionlimit(recursion_limit)
 
 # Обмеження часу і пам'яті
-TIME_LIMIT = 10 * 60  # 10 хвилин
-MEMORY_LIMIT_MB = 512  # 512 Мб
+# TIME_LIMIT_SEC = 10 * 60  # 10 хвилин
+# MEMORY_LIMIT_MB = 512  # 512 Мб
 
 # Завершення програми при перевищенні часу виконання
 def terminate_program():
     print("Програма перевищила ліміт часу і буде завершена.")
     os._exit(1)
 
-# Завершення програми при перевищенні використання пам'яті
-def check_memory_limit():
-    process = psutil.Process(os.getpid())
-    while True:
-        mem_usage = process.memory_info().rss / (1024 * 1024)
-        if mem_usage > MEMORY_LIMIT_MB:
-            print("Програма перевищила ліміт пам'яті і буде завершена.")
-            os._exit(1)
-        time.sleep(1)
+# # Завершення програми при перевищенні використання пам'яті
+# def check_memory_limit():
+#     process = psutil.Process(os.getpid())
+#     while True:
+#         mem_usage = process.memory_info().rss / (1024 * 1024)
+#         if mem_usage > MEMORY_LIMIT_MB:
+#             print("Програма перевищила ліміт пам'яті і буде завершена.")
+#             os._exit(1)
+#         time.sleep(1)
 
-# Запуск таймера
-timer = threading.Timer(TIME_LIMIT, terminate_program)
-timer.start()
+# # Запуск таймера
+# timer = threading.Timer(TIME_LIMIT_SEC, terminate_program)
+# timer.start()
 
-# Запуск моніторингу пам'яті
-memory_thread = threading.Thread(target=check_memory_limit)
-memory_thread.start()
+# # Запуск моніторингу пам'яті
+# memory_thread = threading.Thread(target=check_memory_limit)
+# memory_thread.start()
 
 # Цільовий стан задачі
 goal_state = [
@@ -114,27 +114,28 @@ def generate_solvable_puzzle(goal_state, moves=10):
         state = random.choice(neighbors)
     return state
 
-try:
-    print("RBFS:")
-    print("Початковий стан:")
-    start_state = generate_solvable_puzzle(goal_state, moves=30)
-    for row in start_state:
-        print(row)
+def attempt():
+    try:
+        # print("RBFS:")
+        # print("Початковий стан:")
+        start_state = generate_solvable_puzzle(goal_state, moves=30)
+        # for row in start_state:
+        #     print(row)
 
-    start_time = time.time()
+        start_time = time.time()
 
-    result, depth = rbfs(start_state)
+        result, depth = rbfs(start_state)
 
-    end_time = time.time()
-    elapsed_time = end_time - start_time  # Час виконання
-
-    if result == goal_state:
-        print("Цільовий стан досягнуто.")
-        print("Глибина:", depth)
-    else:
-        print(f"За {recursion_limit-5} ітерацій рішення НЕ було знайдено")
-    print("Час роботи алгоритму:", elapsed_time, "секунд")
-except KeyboardInterrupt:
-    print("Програма зупинена користувачем.")
-finally:
-    timer.cancel()  # Скасування таймера
+        end_time = time.time()
+        elapsed_time = end_time - start_time  # Час виконання
+        return result, depth, elapsed_time
+        # if result == goal_state:
+        #     print("Цільовий стан досягнуто.")
+        #     print("Глибина:", depth)
+        # else:
+        #     print(f"За {recursion_limit-5} ітерацій рішення НЕ було знайдено")
+        # print("Час роботи алгоритму:", elapsed_time, "секунд")
+    except KeyboardInterrupt:
+        print("Програма зупинена користувачем.")
+    # finally:
+    #     timer.cancel()  # Скасування таймера

@@ -1,42 +1,15 @@
 import time
 import random
-# import psutil
-# import threading
 import os
 import sys
 
-# Обмеження рекурсивного виклику функцій(максимальна зафіксована кількість ітерацій ~ 20000)
 recursion_limit = 20000
 sys.setrecursionlimit(recursion_limit)
 
-# Обмеження часу і пам'яті
-# TIME_LIMIT_SEC = 10 * 60  # 10 хвилин
-# MEMORY_LIMIT_MB = 512  # 512 Мб
-
-# Завершення програми при перевищенні часу виконання
 def terminate_program():
     print("Програма перевищила ліміт часу і буде завершена.")
     os._exit(1)
 
-# # Завершення програми при перевищенні використання пам'яті
-# def check_memory_limit():
-#     process = psutil.Process(os.getpid())
-#     while True:
-#         mem_usage = process.memory_info().rss / (1024 * 1024)
-#         if mem_usage > MEMORY_LIMIT_MB:
-#             print("Програма перевищила ліміт пам'яті і буде завершена.")
-#             os._exit(1)
-#         time.sleep(1)
-
-# # Запуск таймера
-# timer = threading.Timer(TIME_LIMIT_SEC, terminate_program)
-# timer.start()
-
-# # Запуск моніторингу пам'яті
-# memory_thread = threading.Thread(target=check_memory_limit)
-# memory_thread.start()
-
-# Цільовий стан задачі
 goal_state = [
     [1, 2, 3],
     [4, 5, 6],
@@ -64,7 +37,7 @@ def get_neighbors(state):
             neighbors.append(new_state)
     return neighbors
 
-# H1 - підрахунок фішок, які не на своїх місцях
+# підрахунок фішок, які не на своїх місцях
 def h1(state):
     mismatch_count = 0
     for i in range(3):
@@ -77,7 +50,7 @@ def h1(state):
 def get_best_neighbor(neighbors):
     best_neighbor = neighbors[0]
     best_score = h1(best_neighbor)
-    candidates = [best_neighbor]  # Список кандидатів із найкращим значенням (для рандомного вибору при рівності значень)
+    candidates = [best_neighbor] 
     for n in neighbors[1:]:
         score = h1(n)
         if score < best_score:
@@ -116,26 +89,16 @@ def generate_solvable_puzzle(goal_state, moves=10):
 
 def attempt():
     try:
-        # print("RBFS:")
-        # print("Початковий стан:")
         start_state = generate_solvable_puzzle(goal_state, moves=30)
-        # for row in start_state:
-        #     print(row)
+        start_mem = start_state.copy()
 
         start_time = time.time()
 
         result, depth = rbfs(start_state)
 
         end_time = time.time()
-        elapsed_time = end_time - start_time  # Час виконання
-        return result, depth, elapsed_time
-        # if result == goal_state:
-        #     print("Цільовий стан досягнуто.")
-        #     print("Глибина:", depth)
-        # else:
-        #     print(f"За {recursion_limit-5} ітерацій рішення НЕ було знайдено")
-        # print("Час роботи алгоритму:", elapsed_time, "секунд")
+        elapsed_time = end_time - start_time  
+        return result, start_mem, depth, elapsed_time
     except KeyboardInterrupt:
         print("Програма зупинена користувачем.")
-    # finally:
-    #     timer.cancel()  # Скасування таймера
+

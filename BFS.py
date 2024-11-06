@@ -1,37 +1,18 @@
 import time
 import random
-import psutil
 import threading
 import os
 
-# Обмеження часу і пам'яті
-TIME_LIMIT_SEC = 10 * 60  # 10 хвилин
-MEMORY_LIMIT_MB = 512  # 512 Мб
+TIME_LIMIT_SEC = 10 * 60  
+MEMORY_LIMIT_MB = 512  
 
-# Завершення програми при перевищенні часу виконання
 def terminate_program():
     print("Програма перевищила ліміт часу і буде завершена.")
     os._exit(1)
 
-# Завершення програми при перевищенні використання пам'яті
-# def check_memory_limit():
-#     process = psutil.Process(os.getpid())
-#     while True:
-#         mem_usage = process.memory_info().rss / (1024 * 1024)
-#         if mem_usage > MEMORY_LIMIT_MB:
-#             print("Програма перевищила ліміт пам'яті і буде завершена.")
-#             os._exit(1)
-#         time.sleep(1)
-
-# Запуск таймера
 timer = threading.Timer(TIME_LIMIT_SEC, terminate_program)
 timer.start()
 
-# # Запуск моніторингу пам'яті
-# memory_thread = threading.Thread(target=check_memory_limit)
-# memory_thread.start()
-
-# цільовий стан задачі
 goal_state = [
     [1, 2, 3],
     [4, 5, 6],
@@ -59,7 +40,7 @@ def get_neighbors(state):
             neighbors.append(new_state)
     return neighbors
 
-# Пошук в ширину
+# Пошук вширину
 def bfs(start_state):
     visited = []
     queue = []
@@ -95,27 +76,17 @@ def generate_solvable_puzzle(goal_state, moves=10):
 
 def attempt():
     try:
-        # print("BFS:")
-        # print("Початковий стан:")
         start_state = generate_solvable_puzzle(goal_state, moves = 30)
-        # for row in start_state:
-        #     print(row)
+        start_mem = start_state.copy()
         start_time = time.time()
         result, depth = bfs(start_state)
         end_time = time.time()
-        elapsed_time = end_time - start_time  # Час виконання
+        elapsed_time = end_time - start_time  
 
-        # if result:
-        #     print("Цільовий стан досягнуто.")
-        #     print("Глибина:", depth)
-        # else:
-        #     print("Рішення не знайдено.")
-        # print("Час роботи алгоритму:", elapsed_time, "секунд")
-
-        return (result, depth, elapsed_time)
+        return result, start_mem, depth, elapsed_time
     except KeyboardInterrupt:
         print("Програма зупинена користувачем.")
     finally:
-        timer.cancel()  # Скасування таймера
+        timer.cancel() 
 
 
